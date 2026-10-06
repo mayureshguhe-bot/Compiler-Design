@@ -4,7 +4,7 @@ import sqlite3
 import ast
 
 
-# DATABASE 
+# DATABASE
 
 def create_database():
     conn = sqlite3.connect("errors.db")
@@ -25,33 +25,13 @@ def create_database():
          "The Python code has incorrect syntax.",
          "Check brackets, quotes, colons and Python syntax."),
 
-        (2, "Name Error", "NameError",
-         "A variable or function is used before it is defined.",
-         "Define the variable or function before using it."),
-
-        (3, "Type Error", "TypeError",
+        (2, "Type Error", "TypeError",
          "An operation was performed on incompatible data types.",
          "Check the data types before performing the operation."),
 
-        (4, "Indentation Error", "IndentationError",
-         "The indentation of the Python code is incorrect.",
-         "Correct the indentation of the code."),
-
-        (5, "Zero Division Error", "ZeroDivisionError",
+        (3, "Zero Division Error", "ZeroDivisionError",
          "A number is being divided by zero.",
-         "Make sure the denominator is not zero."),
-
-        (6, "Index Error", "IndexError",
-         "A list or sequence index is outside its valid range.",
-         "Check the index value and list length."),
-
-        (7, "Key Error", "KeyError",
-         "A dictionary key does not exist.",
-         "Check whether the requested key exists."),
-
-        (8, "Value Error", "ValueError",
-         "A function received an inappropriate value.",
-         "Check the value supplied to the function.")
+         "Make sure the denominator is not zero.")
     ]
 
     cursor.executemany("""
@@ -64,7 +44,7 @@ def create_database():
     conn.close()
 
 
-#  DATABASE SEARCH 
+# DATABASE SEARCH
 
 def get_error(error_name):
     conn = sqlite3.connect("errors.db")
@@ -82,16 +62,19 @@ def get_error(error_name):
     return result
 
 
-# ERROR ANALYZER 
+# ERROR ANALYZER
 
 def analyze_code():
     code = code_input.get("1.0", tk.END).strip()
 
     if code == "":
-        messagebox.showwarning("Input Required", "Please enter some Python code.")
+        messagebox.showwarning(
+            "Input Required",
+            "Please enter some Python code."
+        )
         return
 
-    # 1. Check syntax errors
+    # 1. Check Syntax Error
     try:
         tree = ast.parse(code)
 
@@ -106,11 +89,15 @@ def analyze_code():
         )
         return
 
-    # 2. Check for division by zero
+    # 2. Check Zero Division Error
     for node in ast.walk(tree):
+
         if isinstance(node, ast.BinOp):
+
             if isinstance(node.op, (ast.Div, ast.FloorDiv, ast.Mod)):
+
                 if isinstance(node.right, ast.Constant):
+
                     if node.right.value == 0:
 
                         result = get_error("ZeroDivisionError")
@@ -123,8 +110,9 @@ def analyze_code():
                         )
                         return
 
-    # 3. Check for obvious type mismatch
+    # 3. Check Type Error
     for node in ast.walk(tree):
+
         if isinstance(node, ast.BinOp):
 
             if isinstance(node.op, ast.Add):
@@ -146,49 +134,7 @@ def analyze_code():
                         )
                         return
 
-    # 4. Check for undefined_variable
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Name):
-
-            if node.id == "undefined_variable":
-
-                result = get_error("NameError")
-
-                show_result(
-                    result[0],
-                    result[1],
-                    result[2],
-                    "Variable 'undefined_variable' is not defined."
-                )
-                return
-
-    # 5. Check for suspicious list index
-    if "list_example[10]" in code:
-
-        result = get_error("IndexError")
-
-        show_result(
-            result[0],
-            result[1],
-            result[2],
-            "The list index may be outside the valid range."
-        )
-        return
-
-    # 6. Check for dictionary missing key example
-    if "student['age']" in code:
-
-        result = get_error("KeyError")
-
-        show_result(
-            result[0],
-            result[1],
-            result[2],
-            "The dictionary may not contain the requested key."
-        )
-        return
-
-    # 7. No recognized error
+    # No recognized error
     show_result(
         "No Error Detected",
         "The entered code has no recognized error.",
@@ -197,7 +143,7 @@ def analyze_code():
     )
 
 
-# DISPLAY RESULT 
+# DISPLAY RESULT
 
 def show_result(error_type, description, solution, detail):
 
@@ -215,9 +161,10 @@ def show_result(error_type, description, solution, detail):
     solution_box.config(state="disabled")
 
 
-# CLEAR 
+# CLEAR
 
 def clear_all():
+
     code_input.delete("1.0", tk.END)
 
     error_label.config(text="Error Type:")
@@ -232,7 +179,7 @@ def clear_all():
     solution_box.config(state="disabled")
 
 
-# GUI 
+# GUI
 
 create_database()
 
@@ -241,12 +188,14 @@ root.title("Smart Compiler Error Analyzer")
 root.geometry("850x650")
 root.resizable(False, False)
 
+
 title = tk.Label(
     root,
     text="Smart Compiler Error Analyzer",
     font=("Arial", 22, "bold")
 )
 title.pack(pady=15)
+
 
 subtitle = tk.Label(
     root,
@@ -255,11 +204,13 @@ subtitle = tk.Label(
 )
 subtitle.pack()
 
+
 tk.Label(
     root,
     text="Enter Your Code:",
     font=("Arial", 12, "bold")
 ).pack(anchor="w", padx=30, pady=(15, 5))
+
 
 code_input = tk.Text(
     root,
@@ -269,8 +220,10 @@ code_input = tk.Text(
 )
 code_input.pack(padx=30)
 
+
 button_frame = tk.Frame(root)
 button_frame.pack(pady=12)
+
 
 analyze_button = tk.Button(
     button_frame,
@@ -281,6 +234,7 @@ analyze_button = tk.Button(
 )
 analyze_button.grid(row=0, column=0, padx=10)
 
+
 clear_button = tk.Button(
     button_frame,
     text="Clear",
@@ -290,12 +244,14 @@ clear_button = tk.Button(
 )
 clear_button.grid(row=0, column=1, padx=10)
 
+
 error_label = tk.Label(
     root,
     text="Error Type:",
     font=("Arial", 12, "bold")
 )
 error_label.pack(anchor="w", padx=30, pady=5)
+
 
 detail_label = tk.Label(
     root,
@@ -304,11 +260,13 @@ detail_label = tk.Label(
 )
 detail_label.pack(anchor="w", padx=30)
 
+
 tk.Label(
     root,
     text="Explanation:",
     font=("Arial", 11, "bold")
 ).pack(anchor="w", padx=30, pady=(10, 2))
+
 
 explanation_box = tk.Text(
     root,
@@ -319,11 +277,13 @@ explanation_box = tk.Text(
 explanation_box.pack(padx=30)
 explanation_box.config(state="disabled")
 
+
 tk.Label(
     root,
     text="Suggested Solution:",
     font=("Arial", 11, "bold")
 ).pack(anchor="w", padx=30, pady=(10, 2))
+
 
 solution_box = tk.Text(
     root,
@@ -333,5 +293,6 @@ solution_box = tk.Text(
 )
 solution_box.pack(padx=30)
 solution_box.config(state="disabled")
+
 
 root.mainloop()
