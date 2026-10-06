@@ -4,7 +4,7 @@ import sqlite3
 import ast
 
 
-# ---------------- DATABASE ----------------
+# DATABASE 
 
 def create_database():
     conn = sqlite3.connect("errors.db")
@@ -64,7 +64,7 @@ def create_database():
     conn.close()
 
 
-# ---------------- DATABASE SEARCH ----------------
+#  DATABASE SEARCH 
 
 def get_error(error_name):
     conn = sqlite3.connect("errors.db")
@@ -82,7 +82,7 @@ def get_error(error_name):
     return result
 
 
-# ---------------- ERROR ANALYZER ----------------
+# ERROR ANALYZER 
 
 def analyze_code():
     code = code_input.get("1.0", tk.END).strip()
@@ -197,7 +197,7 @@ def analyze_code():
     )
 
 
-# ---------------- DISPLAY RESULT ----------------
+# DISPLAY RESULT 
 
 def show_result(error_type, description, solution, detail):
 
@@ -215,7 +215,7 @@ def show_result(error_type, description, solution, detail):
     solution_box.config(state="disabled")
 
 
-# ---------------- CLEAR ----------------
+# CLEAR 
 
 def clear_all():
     code_input.delete("1.0", tk.END)
@@ -232,7 +232,7 @@ def clear_all():
     solution_box.config(state="disabled")
 
 
-# ---------------- GUI ----------------
+# GUI 
 
 create_database()
 
